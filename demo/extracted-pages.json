@@ -1,0 +1,7 @@
+{
+  "document": {"name": "lecture.pdf", "pages": 21},
+  "pages": [
+    {"page": 7, "text": "Virtualization\nThe OS transforms physical resources into virtual forms. Applications behave as if they have resources to themselves. Virtualization creates the illusion of dedicated resources."},
+    {"page": 12, "text": "Scheduling\nThe scheduler selects which ready process runs next. A process may wait while another process uses the CPU."}
+  ]
+}
