@@ -1,0 +1,37 @@
+{
+  "document": {
+    "name": "lecture.pdf",
+    "pages": 12
+  },
+  "barriers": [
+    {
+      "page": 3,
+      "type": "high_information_density",
+      "label": "High information density",
+      "reason": "Several dense paragraphs introduce multiple technical ideas."
+    }
+  ],
+  "concepts": [
+    {
+      "id": 1,
+      "title": "Virtual Memory",
+      "subtitle": "Understanding the big picture",
+      "essential": [
+        "Virtual memory gives each process its own address space.",
+        "Virtual addresses are translated into physical addresses."
+      ],
+      "keyIdea": "Virtual memory is not the same as physical memory.",
+      "expandedExplanation": "The operating system and hardware work together to translate virtual addresses into physical addresses.",
+      "sourcePage": 3,
+      "quickCheck": {
+        "question": "What is the main purpose of virtual memory?",
+        "choices": [
+          "Increase CPU speed",
+          "Provide processes with a virtual address space",
+          "Replace physical memory"
+        ],
+        "correct": 1
+      }
+    }
+  ]
+}
