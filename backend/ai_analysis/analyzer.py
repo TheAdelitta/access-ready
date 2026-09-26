@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .providers import AnalysisProvider, DemoProvider
 from .schemas import Analysis, ExtractedDocument
 

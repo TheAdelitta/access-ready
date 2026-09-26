@@ -1,9 +1,19 @@
 """PDF text extraction API for Access Ready."""
 
 import fitz
+import logging
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
+if __package__:
+    from .ai_analysis.analyzer import analyze
+    from .ai_analysis.schemas import Analysis
+else:  # Also support uvicorn main:app from backend/.
+    from ai_analysis.analyzer import analyze
+    from ai_analysis.schemas import Analysis
+
+logger = logging.getLogger(__name__)
 
 
 class Document(BaseModel):
@@ -42,6 +52,22 @@ def health() -> dict[str, str]:
 
 @app.post("/api/upload", response_model=UploadResponse)
 def upload_pdf(file: UploadFile = File(...)) -> UploadResponse:
+    return extract_pdf(file)
+
+
+@app.post("/api/analyze", response_model=Analysis)
+def analyze_pdf(file: UploadFile = File(...)) -> Analysis:
+    source = extract_pdf(file)
+    try:
+        return analyze(source.model_dump())
+    except Exception as exc:
+        logger.exception("PDF analysis failed")
+        raise HTTPException(
+            status_code=502, detail="Document analysis failed. Please try again."
+        ) from exc
+
+
+def extract_pdf(file: UploadFile) -> UploadResponse:
     """Extract text in page order without saving the uploaded document."""
     try:
         if not file.filename or not file.filename.lower().endswith(".pdf"):

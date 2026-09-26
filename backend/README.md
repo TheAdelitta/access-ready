@@ -1,6 +1,6 @@
 # Access Ready backend
 
-A small FastAPI API that extracts text from uploaded PDFs using PyMuPDF.
+A small FastAPI API that extracts PDF text with PyMuPDF and passes it to the existing validated analyzer.
 Requires Python 3.10 or newer. Run the commands below from `backend/`.
 
 ## Install and run
@@ -76,6 +76,32 @@ if (!response.ok) throw new Error(JSON.stringify(result.detail));
 
 Let the browser set the multipart `Content-Type` and boundary automatically.
 
-This backend has no authentication, database, Azure services, or AI calls.
+This backend has no authentication, database, or external model calls by default.
 Documents are read into memory for extraction and are not saved by the app.
 This simple local demo does not impose an upload size limit; use modest PDFs.
+
+## Analysis and integration tests
+
+`POST /api/analyze` accepts the same multipart `file` as extraction and returns
+validated `document`, `barriers`, and `concepts` from the existing analyzer.
+Extraction errors remain HTTP 400; analysis/provider failures return HTTP 502.
+There is no silent server-side switch to static sample content.
+
+The analyzer currently defaults to its deterministic offline extractive provider.
+Results come from the uploaded PDF, but this is not live semantic AI analysis.
+It flags text density and creates short source excerpts and recall questions.
+Image-only pages need OCR (not included); unsuitable text can yield zero concepts.
+Visual layout barriers cannot be inferred from extracted text.
+
+From the repository root, run the backend and tests using the existing environment:
+
+```powershell
+backend/.venv/Scripts/python.exe -m pip install -r backend/requirements-dev.txt
+backend/.venv/Scripts/python.exe -m unittest backend.ai_analysis.test_analysis backend.test_api -v
+backend/.venv/Scripts/python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
+```
+
+Start the frontend in another terminal with `cd frontend; npm run dev`.
+Upload a PDF, review its returned barriers/concepts, then click Create Focus View.
+Tests generate actual PDF bytes and exercise multipart extraction and analysis,
+page references, blank pages, invalid/encrypted uploads, provider errors, and CORS.
